@@ -62,3 +62,5 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+backend/__pycache__/settings.cpython-313.pyc
+backend/__pycache__/urls.cpython-313.pyc
