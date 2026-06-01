@@ -107,14 +107,14 @@ http://localhost:3000
 
 ## 📡 API Endpoints
 
-Auth
-POST /api/login/ → returns token
-Ideas
-GET /api/ideas/ → list ideas
-POST /api/ideas/ → create idea
-Voting
-POST /api/ideas/<id>/vote/ → vote
-DELETE /api/ideas/<id>/vote/ → unvote
+- Auth
+- POST /api/login/ → returns token
+- Ideas
+- GET /api/ideas/ → list ideas
+- POST /api/ideas/ → create idea
+- Voting
+- POST /api/ideas/<id>/vote/ → vote
+- DELETE /api/ideas/<id>/vote/ → unvote
 
 ## 🧪 Testing
 
