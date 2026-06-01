@@ -65,33 +65,45 @@ cd voting-board
 
 ## Backend setup
 
+```
 python -m venv .venv
 .venv\Scripts\activate # Windows
 pip install -r requirements.txt
+```
 
 ### Run migrations:
 
+```
 python manage.py migrate
 
 python manage.py createsuperuser
+```
 
 ## Start backend server:
 
+```
 python manage.py runserver
+```
 
 ### API runs at:
 
+```
 http://127.0.0.1:8000/api/
+```
 
 ## 3. Frontend setup
 
+```
 cd frontend
 npm install
 npm run dev
+```
 
 ### Frontend runs at:
 
+```
 http://localhost:3000
+```
 
 ## 📡 API Endpoints
 
@@ -111,24 +123,24 @@ Run backend tests:
 
 ## 🧠 Design Notes
 
-Django REST Framework used for rapid API development
-Token authentication chosen for simplicity
-SQLite used for local development convenience
-Voting constraint enforced at database level using unique constraints
+- Django REST Framework used for rapid API development
+- Token authentication chosen for simplicity
+- SQLite used for local development convenience
+- Voting constraint enforced at database level using unique constraints
 
 ## 📌 Trade-offs
 
-Minimal authentication system (no registration flow)
-Simple frontend state management (no Redux or external state library)
-Basic styling to prioritise functionality over UI polish
+- Minimal authentication system (no registration flow)
+- Simple frontend state management (no Redux or external state library)
+- Basic styling to prioritise functionality over UI polish
 
 ## 🎯 Future Improvements (Optional)
 
-Optimistic UI for voting
-Pagination for idea list
-Search functionality
-Enhanced UI/UX styling
-Real-time vote updates
+- Optimistic UI for voting
+- Pagination for idea list
+- Search functionality
+- Enhanced UI/UX styling
+- Real-time vote updates
 
 ## License
 
