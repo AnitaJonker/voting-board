@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+html {
+    min-height: 100%;
+}
+
+body {
+    @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+.create-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.create-title {
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.create-input,
+.create-textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.create-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.create-button {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background: #111;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.create-button:hover {
+    background: #333;
+}
+
+.create-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
