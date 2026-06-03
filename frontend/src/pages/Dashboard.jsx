@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { authFetch } from "../api";
+import { authFetch, API_BASE_URL } from "../api";
 import CreateIdea from "../components/CreateIdea";
 import IdeasList from "../components/IdeasList";
 import SortControls from "../components/SortControls";
@@ -8,46 +8,87 @@ export default function Dashboard() {
   const [ideas, setIdeas] = useState([]);
   const [sortBy, setSortBy] = useState("votes");
 
+  const normalizeIdeas = (data) =>
+    Array.isArray(data)
+      ? data
+      : Array.isArray(data?.results)
+        ? data.results
+        : [];
+
   const loadIdeas = async () => {
-    const res = await authFetch("http://127.0.0.1:8000/api/ideas/");
-    const data = await res.json();
-    setIdeas(data);
+    try {
+      const res = await authFetch(`${API_BASE_URL}/api/ideas/`);
+
+      if (!res.ok) {
+        setIdeas([]);
+        return;
+      }
+
+      const data = await res.json().catch(() => null);
+      setIdeas(normalizeIdeas(data));
+    } catch {
+      setIdeas([]);
+    }
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      loadIdeas();
-    }
+    if (!token) return;
+
+    (async () => {
+      try {
+        const res = await authFetch(`${API_BASE_URL}/api/ideas/`);
+
+        if (!res.ok) {
+          setIdeas([]);
+          return;
+        }
+
+        const data = await res.json().catch(() => null);
+        setIdeas(normalizeIdeas(data));
+      } catch {
+        setIdeas([]);
+      }
+    })();
   }, []);
 
-  const vote = async (id) => {
-    await authFetch(`http://127.0.0.1:8000/api/ideas/${id}/vote/`, {
+  const sendVote = async (id, choice) => {
+    const res = await authFetch(`${API_BASE_URL}/api/ideas/${id}/vote/`, {
       method: "POST",
+      body: JSON.stringify({ choice }),
     });
-    loadIdeas();
+
+    if (res.ok) {
+      loadIdeas();
+    }
   };
 
+  const vote = async (id) => sendVote(id, "Y");
+  const voteNo = async (id) => sendVote(id, "N");
   const unvote = async (id) => {
-    await authFetch(`http://127.0.0.1:8000/api/ideas/${id}/unvote/`, {
+    const res = await authFetch(`${API_BASE_URL}/api/ideas/${id}/unvote/`, {
       method: "DELETE",
     });
-    loadIdeas();
+
+    if (res.ok) {
+      loadIdeas();
+    }
   };
 
-  // Defensive: ensure we always work with an array. Some API responses
-  // may return an object (e.g. { results: [...] }) or null on error.
-  const ideaArray = Array.isArray(ideas)
-    ? ideas
-    : ideas && ideas.results
-      ? ideas.results
-      : [];
+  const ideaArray = useMemo(
+    () =>
+      Array.isArray(ideas)
+        ? ideas
+        : ideas && ideas.results
+          ? ideas.results
+          : [],
+    [ideas],
+  );
 
   const sortedIdeas = useMemo(
     () =>
       [...ideaArray].sort((a, b) => {
-        if (sortBy === "votes")
-          return (b.vote_count || 0) - (a.vote_count || 0);
+        if (sortBy === "votes") return (b.yes_count || 0) - (a.yes_count || 0);
         if (sortBy === "newest")
           return new Date(b.created_at) - new Date(a.created_at);
         return 0;
@@ -57,7 +98,7 @@ export default function Dashboard() {
 
   const totalIdeas = ideaArray.length;
   const totalVotes = ideaArray.reduce(
-    (sum, idea) => sum + (idea.vote_count || 0),
+    (sum, idea) => sum + (idea.yes_count || 0),
     0,
   );
   const recentIdeas = ideaArray.filter((idea) => {
@@ -70,8 +111,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
-        <header className="mb-8 flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8 text-left">
+        <header className="mb-8 flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/40 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between text-left">
           <div>
             <p className="mb-2 text-sm uppercase tracking-[0.24em] text-cyan-300/80">
               Community voting board
@@ -96,12 +137,12 @@ export default function Dashboard() {
           </button>
         </header>
 
-        <div className=" top-6 rounded-3xl border border-white/10 bg-slate-900/80 p-6 m-10 shadow-2xl shadow-slate-950/30">
+        <div className="top-6 rounded-3xl border border-white/10 bg-slate-900/80 p-6 mb-6 shadow-2xl shadow-slate-950/30 text-left">
           <CreateIdea onCreated={loadIdeas} />
         </div>
 
-        <section className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 bg-slate-900/75 p-5 shadow-lg shadow-slate-950/30">
+        <section className="grid gap-4 md:grid-cols-3 text-left">
+          <div className="rounded-3xl border border-white/10 bg-slate-900/75 p-5 shadow-lg shadow-slate-950/30 text-left">
             <p className="text-sm uppercase tracking-[0.24em] text-slate-400">
               Total ideas
             </p>
@@ -121,11 +162,11 @@ export default function Dashboard() {
               {totalVotes}
             </p>
             <p className="mt-2 text-sm text-slate-400">
-              Sorted by {sortBy === "votes" ? "top support" : "newest"}.
+              Sorted by {sortBy === "votes" ? "top votes" : "newest"}.
             </p>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cyan-500/15 to-slate-900/40 p-5 shadow-lg shadow-cyan-500/10">
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-cyan-500/15 to-slate-900/40 p-5 shadow-lg shadow-cyan-500/10 text-left">
             <p className="text-sm uppercase tracking-[0.24em] text-cyan-200/70">
               Quick actions
             </p>
@@ -157,13 +198,18 @@ export default function Dashboard() {
             </div>
 
             {sortedIdeas.length ? (
-              <IdeasList ideas={sortedIdeas} onVote={vote} onUnvote={unvote} />
+              <IdeasList
+                ideas={sortedIdeas}
+                onVote={vote}
+                onNoVote={voteNo}
+                onUnvote={unvote}
+              />
             ) : (
-              <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900/70 p-10 text-center text-slate-300 ">
+              <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900/70 p-10 text-left text-slate-300">
                 <p className="text-lg font-medium text-white">No ideas yet</p>
                 <p className="mt-2 text-sm text-slate-400">
-                  Add the first idea using the panel on the right to get
-                  started.
+                  No Ideas have been submitted yet. Be the first to share your
+                  idea and inspire the community!
                 </p>
               </div>
             )}
