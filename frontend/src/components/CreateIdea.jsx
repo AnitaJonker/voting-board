@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { authFetch } from "../api";
+import { authFetch, API_BASE_URL } from "../api";
 
 export default function CreateIdea({ onCreated }) {
   const [title, setTitle] = useState("");
@@ -11,7 +11,7 @@ export default function CreateIdea({ onCreated }) {
     setLoading(true);
 
     try {
-      await authFetch("http://127.0.0.1:8000/api/ideas/", {
+      await authFetch(`${API_BASE_URL}/api/ideas/`, {
         method: "POST",
         body: JSON.stringify({ title, description }),
       });
