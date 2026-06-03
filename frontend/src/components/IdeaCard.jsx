@@ -1,8 +1,9 @@
-export default function IdeaCard({ idea, onVote, onUnvote }) {
-  const totalVotes =
-    idea.vote_count ?? (idea.yes_votes || 0) + (idea.no_votes || 0);
+export default function IdeaCard({ idea, onVote, onNoVote, onUnvote }) {
+  const yesVotes = idea.yes_votes ?? 0;
+  const noVotes = idea.no_votes ?? 0;
+  const totalVotes = idea.vote_count ?? yesVotes + noVotes;
   const supportRate = totalVotes
-    ? Math.round(((idea.yes_votes || 0) / totalVotes) * 100)
+    ? Math.round((yesVotes / totalVotes) * 100)
     : 0;
 
   return (
@@ -32,7 +33,7 @@ export default function IdeaCard({ idea, onVote, onUnvote }) {
             {idea.yes_votes ?? 0}
           </p>
           <p className="mt-1 text-xs uppercase tracking-[0.24em] text-slate-400">
-            Yes votes
+            Yes
           </p>
         </div>
         <div className="rounded-2xl bg-slate-950/80 p-4 text-center">
@@ -40,7 +41,7 @@ export default function IdeaCard({ idea, onVote, onUnvote }) {
             {idea.no_votes ?? 0}
           </p>
           <p className="mt-1 text-xs uppercase tracking-[0.24em] text-slate-400">
-            No votes
+            No
           </p>
         </div>
       </div>
@@ -59,21 +60,27 @@ export default function IdeaCard({ idea, onVote, onUnvote }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+        <button
+          onClick={() => onVote(idea.id)}
+          className="inline-flex min-w-[120px] items-center justify-center rounded-2xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+        >
+          Yes
+        </button>
+        <button
+          onClick={() => onNoVote(idea.id)}
+          className="inline-flex min-w-[120px] items-center justify-center rounded-2xl bg-slate-500 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+        >
+          No
+        </button>
         {idea.has_voted ? (
           <button
             onClick={() => onUnvote(idea.id)}
-            className="inline-flex min-w-[120px] items-center justify-center rounded-2xl bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+            className="inline-flex min-w-[120px] items-center justify-center rounded-2xl bg-slate-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-600"
           >
-            Remove vote
+            Clear vote
           </button>
-        ) : (
-          <button
-            onClick={() => onVote(idea.id)}
-            className="inline-flex min-w-[120px] items-center justify-center rounded-2xl bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
-          >
-            Vote now
-          </button>
-        )}
+        ) : null}
+
         <span className="inline-flex items-center justify-center rounded-2xl bg-slate-950/80 px-4 py-2 text-sm text-slate-300">
           {new Date(idea.created_at).toLocaleDateString()}
         </span>
