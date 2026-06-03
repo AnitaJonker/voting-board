@@ -19,12 +19,14 @@ class IdeaViewSet(ModelViewSet):
     @action(detail=True, methods=["post"])
     def vote(self, request, pk=None):
         idea = self.get_object()
-        user = request.user
         choice = request.data.get("choice")
         if choice not in ["Y", "N"]:
             return Response({"error": "Invalid choice"}, status=400)
+
         vote, created = Vote.objects.get_or_create(
-            user=request.user, idea=idea, defaults={"choice": choice}
+            user=request.user,
+            idea=idea,
+            defaults={"choice": choice},
         )
 
         if not created:
@@ -33,12 +35,11 @@ class IdeaViewSet(ModelViewSet):
 
         return Response({"status": "voted", "choice": choice})
 
+    @action(detail=True, methods=["delete"])
+    def unvote(self, request, pk=None):
+        idea = self.get_object()
+        Vote.objects.filter(user=request.user, idea=idea).delete()
+        return Response({"status": "unvoted"})
+
     def get_serializer_context(self):
         return {"request": self.request}
-
-
-# @action(detail=True, methods=["delete"])
-# def unvote(self, request, pk=None):
-#     idea = self.get_object()
-#     Vote.objects.filter(user=request.user, idea=idea).delete()
-#     return Response({"status": "unvoted"})
