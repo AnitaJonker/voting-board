@@ -1,6 +1,6 @@
 import IdeaCard from "./IdeaCard";
 
-export default function IdeasList({ ideas, onVote, onUnvote }) {
+export default function IdeasList({ ideas, onVote, onNoVote, onUnvote }) {
   return (
     <div>
       {ideas.map((idea) => (
@@ -8,6 +8,7 @@ export default function IdeasList({ ideas, onVote, onUnvote }) {
           key={idea.id}
           idea={idea}
           onVote={onVote}
+          onNoVote={onNoVote}
           onUnvote={onUnvote}
         />
       ))}
