@@ -52,6 +52,9 @@ A lightweight full-stack application built with Django (DRF) and React that allo
 
 ### Example seeded user:
 
+admin
+admin
+
 ---
 
 ## ⚙️ Setup Instructions
