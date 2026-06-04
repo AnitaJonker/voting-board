@@ -9,6 +9,7 @@ from .serializers import IdeaSerializer
 
 
 class IdeaViewSet(ModelViewSet):
+    queryset = Idea.objects.all()
     serializer_class = IdeaSerializer
     permission_classes = [IsAuthenticated]
 
