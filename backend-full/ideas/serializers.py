@@ -22,14 +22,16 @@ class IdeaSerializer(serializers.ModelSerializer):
         ]
 
     def get_vote_count(self, obj):
-        return obj.votes.count()
+        return getattr(obj, "vote_count", obj.votes.count())
 
     def get_has_voted(self, obj):
+        if hasattr(obj, "has_voted"):
+            return obj.has_voted
         user = self.context["request"].user
         return obj.votes.filter(user=user).exists()
 
     def get_yes_votes(self, obj):
-        return obj.votes.filter(choice="Y").count()
+        return getattr(obj, "yes_votes", obj.votes.filter(choice="Y").count())
 
     def get_no_votes(self, obj):
-        return obj.votes.filter(choice="N").count()
+        return getattr(obj, "no_votes", obj.votes.filter(choice="N").count())
