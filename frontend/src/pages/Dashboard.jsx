@@ -35,21 +35,7 @@ export default function Dashboard() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    (async () => {
-      try {
-        const res = await authFetch(`${API_BASE_URL}/api/ideas/`);
-
-        if (!res.ok) {
-          setIdeas([]);
-          return;
-        }
-
-        const data = await res.json().catch(() => null);
-        setIdeas(normalizeIdeas(data));
-      } catch {
-        setIdeas([]);
-      }
-    })();
+    loadIdeas();
   }, []);
 
   const sendVote = async (id, choice) => {
@@ -88,7 +74,7 @@ export default function Dashboard() {
   const sortedIdeas = useMemo(
     () =>
       [...ideaArray].sort((a, b) => {
-        if (sortBy === "votes") return (b.yes_count || 0) - (a.yes_count || 0);
+        if (sortBy === "votes") return (b.yes_votes || 0) - (a.yes_votes || 0);
         if (sortBy === "newest")
           return new Date(b.created_at) - new Date(a.created_at);
         return 0;
@@ -98,7 +84,7 @@ export default function Dashboard() {
 
   const totalIdeas = ideaArray.length;
   const totalVotes = ideaArray.reduce(
-    (sum, idea) => sum + (idea.yes_count || 0),
+    (sum, idea) => sum + ((idea.yes_votes || 0) + (idea.no_votes || 0)),
     0,
   );
   const recentIdeas = ideaArray.filter((idea) => {
