@@ -91,7 +91,7 @@ python manage.py runserver
 ### API runs at:
 
 ```
-http://127.0.0.1:8000/api/
+http://127.0.0.1:8000/
 ```
 
 ## 3. Frontend setup
@@ -105,7 +105,7 @@ npm run dev
 ### Frontend runs at:
 
 ```
-http://localhost:3000
+http://localhost:5173/
 ```
 
 ## 📡 API Endpoints
