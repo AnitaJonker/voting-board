@@ -8,9 +8,6 @@ class Idea(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def vote_count(self):
-        return self.votes.count()
-
     def __str__(self):
         return self.title
 
